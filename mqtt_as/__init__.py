@@ -1,5 +1,5 @@
 # mqtt_as.py Asynchronous version of umqtt.robust
-# (C) Copyright Peter Hinch 2017-2023.
+# (C) Copyright Peter Hinch 2017-2025.
 # Released under the MIT licence.
 
 # Pyboard D support added also RP2/default
@@ -7,8 +7,6 @@
 # V5 support added by Bob Veringa.
 # Also other contributors.
 
-# 32720
-# 32896 with f-strings
 import gc
 import socket
 import struct
@@ -30,7 +28,7 @@ import network
 gc.collect()
 from sys import platform
 
-VERSION = (0, 8, 3)
+VERSION = (0, 8, 4)
 # Default initial size for input messge buffer. Increase this if large messages
 # are expected, but rarely, to avoid big runtime allocations
 IBUFSIZE = 50
@@ -575,7 +573,8 @@ class MQTT_base:
 
         if res is None:
             return
-        assert res != b"", "Empty response"
+        if res == b"":
+            raise OSError(-1, "Empty response")  # Can happen on broker fail
 
         if res == b"\xd0":  # PINGRESP
             await self._as_read(1)  # Update .last_rx time
@@ -584,8 +583,8 @@ class MQTT_base:
 
         if op == 0x40:  # PUBACK
             sz, _ = await self._recv_len()
-            if not mqttv5:
-                assert sz == 2, "Invalid PUBACK packet"
+            if not mqttv5 and sz != 2:
+                raise OSError(-1, "Invalid PUBACK packet")
             rcv_pid = await self._as_read(2)
             pid = rcv_pid[0] << 8 | rcv_pid[1]
             # For some reason even on MQTTv5 reason code is optional
@@ -620,7 +619,8 @@ class MQTT_base:
                     decoded_props = decode_properties(suback_props, suback_props_sz)
                     self.dprint("[UN] SUBACK properties %s", decoded_props)
 
-            assert sz <= 1, "Got too many bytes"
+            if sz > 1:
+                raise OSError(-1, "Got too many bytes")
             if suback or mqttv5:
                 reason_code = await self._as_read(sz)
                 reason_code = reason_code[0]
