@@ -6,7 +6,7 @@
 Install on k230 cmd line:
 
 ```bash
-mpremote mip install --target /sdcard/libs/ github:SteveChongTTI/micropython-mqtt
+mpremote mip install --target /sdcard/libs/ github:SteveChongTTI/micropython-mqtt-k230
 ```
 
 Below is the original README.md from peterhinch/micropython-mqtt
