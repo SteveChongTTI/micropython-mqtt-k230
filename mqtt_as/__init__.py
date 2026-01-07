@@ -22,7 +22,11 @@ from errno import EINPROGRESS, ETIMEDOUT
 
 gc.collect()
 from micropython import const
-from machine import unique_id
+
+def unique_id():
+    import machine
+    return machine.chipid()
+
 import network
 
 gc.collect()

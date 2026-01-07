@@ -1,4 +1,17 @@
-# MicroPython Asynchronous MQTT
+# Forked from peterhinch/micropython-mqtt
+
+> you need install mpremote first on pipx/pip
+> `pip install mpremote`
+
+Install on k230 cmd line:
+
+```bash
+mpremote mip install --target /sdcard/libs/ github:SteveChongTTI/micropython-mqtt
+```
+
+Below is the original README.md from peterhinch/micropython-mqtt
+
+## MicroPython Asynchronous MQTT
 
 MQTT is an easily used networking protocol designed for IOT (internet of
 things) applications. It is well suited for controlling hardware devices and
